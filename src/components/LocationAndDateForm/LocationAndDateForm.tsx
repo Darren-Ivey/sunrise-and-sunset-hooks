@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import './LocationAndDateForm.css';
 
 type Props = {
@@ -23,14 +23,12 @@ const renderError = (error: string) => (
 )
 
 const LocationAndDateForm = ({ error, getSunActivity }: Props) => {
-
     const [postcode, setPostcode] = useState<string>("");
     const [date, setDate] = useState<string>("");
-
-    const handleSubmit = (e) => {
+    const handleSubmit = useCallback((e) => {
         e.preventDefault();
         getSunActivity(postcode, date);
-    }
+    }, [postcode, date, getSunActivity]);
 
     return (
         <form className="form" onSubmit={handleSubmit}>

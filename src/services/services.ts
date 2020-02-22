@@ -1,6 +1,4 @@
-type Response = {
-    ok: boolean,
-    status: number,
+type ResponseObj = {
     [key: string]: any,
 }
 
@@ -10,10 +8,15 @@ type Coordinates = {
         longitude: string,
         [prop: string]: any;
     }
+    ok: boolean,
+    status: number,
     [key: string]: any;
 }
 
-const catchError = (response: Response) => {
+const catchError = (response: ResponseObj) => {
+    console.log({
+        response
+    })
     if (!response.ok) {
         switch (response.status) {
             // Add more error codes as required

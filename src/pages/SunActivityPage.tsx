@@ -14,13 +14,11 @@ type Response = {
     result: {
         latitude: string,
         longitude: string,
-        [prop: string]: any;
     }
-    [key: string]: any;
 }
 type Error = {
-    error: string;
-    [key: string]: any;
+    message: string,
+    [key: string]: any,
 }
 
 const SunActivityPage = () => {
@@ -39,8 +37,8 @@ const SunActivityPage = () => {
                     setCoordinatesError("");
                     setSunActivity(SunCalc.getTimes(moment(date).toDate(), res.result.latitude, res.result.longitude));
                 })
-                .catch(({ error }: Error) => {
-                    setCoordinatesError(error)
+                .catch(({ message }: Error) => {
+                    setCoordinatesError(message)
                 })
         }
     }, [postcode, date])
