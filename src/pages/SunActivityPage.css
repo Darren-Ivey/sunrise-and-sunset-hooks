@@ -1,0 +1,18 @@
+
+.page-sun-activity {
+    background-color: #f7f7f7;
+    padding: 8px 32px 32px 32px;
+    max-width: 600px;
+    min-width: 320px;
+    box-sizing: border-box;
+}
+
+.page-sun-activity__header {
+    display: block;
+    color: #333;
+    font-weight: 300;
+    padding-bottom: 8px;
+    margin: 24px 0 0 0;
+    border-bottom: 2px white solid;
+    font-family: Open Sans,Helvetica Neue,Helvetica,Arial,sans-serif;
+}
