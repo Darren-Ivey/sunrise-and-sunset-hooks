@@ -1,27 +1,37 @@
-// @flow
+type Response = {
+    ok: boolean,
+    status: number,
+    [key: string]: any,
+}
 
-const catchError = (response: any) => {
+type Coordinates = {
+    result: {
+        latitude: string,
+        longitude: string,
+        [prop: string]: any;
+    }
+    [key: string]: any;
+}
+
+const catchError = (response: Response) => {
     if (!response.ok) {
         switch (response.status) {
-            case 401:
-                throw { error: "UNAUTHENTICATED" };
+            // Add more error codes as required
             case 404:
-                throw { error: "NOT_FOUND" };
+                throw new Error("NOT_FOUND");
             default:
-                throw { error: "UNKNOWN_API_ERROR" };
+                throw new Error("UNKNOWN_API_ERROR");
         }
     }
     return response;
 };
 
-const getOptions = {
-    headers: {
-        "Content-Type": "application/json"
-    },
-    method: 'GET'
-};
-
-export const fetchCoordinates = (postcode: string) =>
-    fetch(`https://api.postcodes.io/postcodes/${ postcode }`, getOptions)
+export const fetchCoordinates = (postcode: string): Promise<Coordinates> =>
+    fetch(`https://api.postcodes.io/postcodes/${postcode}`, {
+        headers: {
+            "Content-Type": "application/json"
+        },
+        method: 'GET'
+    })
         .then((res) => catchError(res))
         .then(res => res.json());

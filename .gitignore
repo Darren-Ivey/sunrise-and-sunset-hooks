@@ -7,7 +7,7 @@ node_modules
 build
 
 # misc
-.idea
+.DS_Store
 
 # dotenv environment variables file
 .env
