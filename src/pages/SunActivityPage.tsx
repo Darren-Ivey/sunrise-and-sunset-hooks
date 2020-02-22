@@ -1,71 +1,68 @@
-// @flow
-
+import React, { useState, useEffect, useCallback } from 'react';
 import moment from 'moment';
-import * as React from 'react';
 import SunCalc from 'suncalc';
 import LocationAndDateForm from '../components/LocationAndDateForm/LocationAndDateForm';
 import SunActivity from '../components/SunActivity/SunActivity';
 import { fetchCoordinates } from '../services/services';
 import './SunActivityPage.css'
 
-type State = {
-    coordinatesError: string | boolean,
-    sunActivity: any,
-};
-
-class SunActivityPage extends React.Component<{}, State> {
-
-    constructor(props: {}) {
-        super(props);
-        this.state = {
-            coordinatesError: false,
-            sunActivity: {},
-        };
-
-        // (this: any).getSunActivity = this.getSunActivity.bind(this);
+type SunActivity = {
+    sunrise: string,
+    sunset: string,
+}
+type Response = {
+    result: {
+        latitude: string,
+        longitude: string,
+        [prop: string]: any;
     }
+    [key: string]: any;
+}
+type Error = {
+    error: string;
+    [key: string]: any;
+}
 
-    getSunActivity (args: {postcode: string, date: string}) {
+const SunActivityPage = () => {
+    const [coordinatesError, setCoordinatesError] = useState<string>("");
+    const [sunActivity, setSunActivity] = useState<SunActivity>({
+        sunrise: "",
+        sunset: "",
+    });
+    const [postcode, setPostcode] = useState<string>();
+    const [date, setDate] = useState<string>();
 
-        const { postcode, date } = args;
+    useEffect(() => {
+        if (postcode && date) {
+            fetchCoordinates(postcode)
+                .then((res: Response) => {
+                    setCoordinatesError("");
+                    setSunActivity(SunCalc.getTimes(moment(date).toDate(), res.result.latitude, res.result.longitude));
+                })
+                .catch(({ error }: Error) => {
+                    setCoordinatesError(error)
+                })
+        }
+    }, [postcode, date])
 
-        fetchCoordinates(postcode)
-            .then((response: any) => {
-                return {
-                    formattedDate: moment(date).toDate(),
-                    latitude: response.result.latitude,
-                    longitude: response.result.longitude
-                }
-            })
-            .then((data: any) => {
-                this.setState({
-                    coordinatesError: false,
-                    sunActivity: SunCalc.getTimes(data.formattedDate, data.latitude, data.longitude),
-                });
-            })
-            .catch(({error}) => {
-                this.setState({
-                    coordinatesError: error
-                });
-            })
-    }
+    const getSunActivity = useCallback(
+        (postcode: string, date: string) => {
+            setPostcode(postcode);
+            setDate(date)
+        }, []);
 
-    render () {
-         const { coordinatesError, sunActivity } = this.state;
-
-         return (
-            <div className="page-sun-activity">
-                <h1 className="page-sun-activity__header">
-                    Sunrise and Sunset
-                </h1>
-                <LocationAndDateForm
-                    error={coordinatesError}
-                    getSunActivity={this.getSunActivity} />
-                <SunActivity
-                    sunActivity={sunActivity} />
-            </div>
-        )
-    }
+    return (
+        <div className="page-sun-activity">
+            <h1 className="page-sun-activity__header">
+                Sunrise and Sunset
+            </h1>
+            <LocationAndDateForm
+                error={coordinatesError}
+                getSunActivity={getSunActivity} />
+            <SunActivity
+                sunActivity={sunActivity} />
+        </div>
+    )
 }
 
 export default SunActivityPage;
