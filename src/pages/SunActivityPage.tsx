@@ -32,14 +32,16 @@ const SunActivityPage = () => {
 
     useEffect(() => {
         if (postcode && date) {
-            fetchCoordinates(postcode)
-                .then((res: Response) => {
+            const fetchData = async () => {
+                try {
+                    const res: Response = await fetchCoordinates(postcode);
                     setCoordinatesError("");
                     setSunActivity(SunCalc.getTimes(moment(date).toDate(), res.result.latitude, res.result.longitude));
-                })
-                .catch(({ message }: Error) => {
+                } catch ({ message }) {
                     setCoordinatesError(message)
-                })
+                }
+            }
+            fetchData();
         }
     }, [postcode, date])
 

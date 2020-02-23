@@ -1,4 +1,6 @@
 type ResponseObj = {
+    ok: boolean,
+    status: number,
     [key: string]: any,
 }
 
@@ -8,15 +10,9 @@ type Coordinates = {
         longitude: string,
         [prop: string]: any;
     }
-    ok: boolean,
-    status: number,
-    [key: string]: any;
 }
 
 const catchError = (response: ResponseObj) => {
-    console.log({
-        response
-    })
     if (!response.ok) {
         switch (response.status) {
             // Add more error codes as required
@@ -29,12 +25,12 @@ const catchError = (response: ResponseObj) => {
     return response;
 };
 
-export const fetchCoordinates = (postcode: string): Promise<Coordinates> =>
-    fetch(`https://api.postcodes.io/postcodes/${postcode}`, {
+export const fetchCoordinates = async (postcode: string) => {
+    const res = await fetch(`https://api.postcodes.io/postcodes/${postcode}`, {
         headers: {
             "Content-Type": "application/json"
         },
         method: 'GET'
     })
-        .then((res) => catchError(res))
-        .then(res => res.json());
+    return catchError(res).json();
+}
